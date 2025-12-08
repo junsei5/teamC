@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛠️ Next.js 認証フロープロジェクト概要
 
-## Getting Started
+このドキュメントは、プロジェクトの主要なファイルとフォルダの役割、および認証システムがどのように機能するかを説明します。本プロジェクトは、Next.js App Routerとミドルウェアを活用し、セキュアなアクセス制御を実現しています。
 
-First, run the development server:
+## 📁 1. アプリケーション構造とルーティング (`app` フォルダ)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+`app` フォルダは、アプリケーションのUI、ルーティング、コンポーネント、ロジックの定義を行う App Router の中心です。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| フォルダ/ファイル名 | パス | 役割 | 詳細な機能 |
+| :--- | :--- | :--- | :--- |
+| **`app/page.tsx`** | `/` | **ルートページ (ランディング)** | 未認証ユーザー向けの公開トップページです。`middleware.ts` の設定により、ログイン済みユーザーは `/dashboard` にリダイレクトされます。|
+| **`app/dashboard/`** | `/dashboard` | **ログイン後メイン画面** | 認証済みユーザーのみがアクセスできる主要コンテンツです。クライアントサイドでも `useAuthStatus` による認証チェックを行っています。|
+| **`app/login/`** | `/login` | ログインフォーム | 認証処理と Cookie の発行を行います。認証成功後、`router.push('/dashboard')` により自動遷移します。|
+| **`app/signup/`** | `/signup` | 新規登録フォーム | 新規ユーザーのアカウント作成インターフェースを提供します。|
+| **`app/hooks/`** | - | **認証状態管理** | `useAuthStatus.ts` が含まれます。ブラウザの **Cookie** を利用して認証トークンを読み書きし、アプリケーション全体に認証状態 (`isAuthenticated`) を提供します。|
+| **`app/components/`** | - | **再利用可能なUI** | 複数のルートで共通利用される小さな UI パーツ（例: ログアウトボタン）を格納し、コードのモジュール化を促進します。|
+| **`app/layout.tsx`** | - | **ルートレイアウト** | 全ページ共通のラッパー（`<html>`, `<body>`）として機能し、ナビゲーションバーやフッターなど、**ページ遷移間で状態を維持する**要素を定義します。|
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 2. 🔒 アクセス制御と設定 (ルートディレクトリ)
 
-## Learn More
+アプリケーションのセキュリティ、依存関係、実行環境を制御するコアファイル群です。
 
-To learn more about Next.js, take a look at the following resources:
+| ファイル名 | 役割 | 詳細な機能 |
+| :--- | :--- | :--- |
+| **`middleware.ts`** | **サーバーサイドのアクセス制御** | リクエストがページに到達する前に実行される **門番** です。Cookieの認証トークンをチェックし、`/dashboard` への未認証アクセスを `/login` へリダイレクトするセキュリティロジックを担います。 |
+| **`package.json`** | **依存関係定義** | プロジェクトの依存ライブラリ (`dependencies`) と開発用ライブラリ (`devDependencies`)、および `npm run dev` などの実行スクリプトを定義します。 |
+| **`tsconfig.json`** | **TypeScript設定** | TypeScript コンパイラに対するルール（モジュール解決、厳格性チェック、対象ファイルの範囲など）を定義します。 |
+| **`.gitignore`** | **Git除外リスト** | バージョン管理すべきでないファイル（`node_modules/`, `.next/` など）を指定し、リポジトリのクリーンさを保ちます。 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. 🔑 認証フローの連携
 
-## Deploy on Vercel
+本プロジェクトの認証フローは、サーバー（ミドルウェア）とクライアント（フック）が連携して動作します。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+1.  **未認証アクセス**: ユーザーが `/dashboard` にアクセスすると、`middleware.ts` がリクエストを傍受し、Cookie にトークンがないため `/login` へリダイレクト（サーバーリダイレクト）します。
+2.  **ログイン成功**: `/login` で認証情報が送信されると、`useAuthStatus.login()` が実行され、認証トークンが **HTTP Cookie** に保存されます。
+3.  **遷移**: ログイン後、クライアント側の `router.push('/dashboard')` により遷移が発生します。
+4.  **認証済みアクセス**: ログイン済みユーザーが `/` にアクセスすると、`middleware.ts` がトークンを確認し、自動的に `/dashboard` へリダイレクトします。
