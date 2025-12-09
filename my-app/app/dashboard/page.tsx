@@ -1,37 +1,37 @@
-// app/dashboard/page.tsx
+"use client"
+import React from 'react';
+import { useRouter } from 'next/navigation'; // ルーター機能のインポート
 
-"use client"; 
-import AuthButtons from "../components/AuthButtons"; 
-import { useAuthStatus } from "../hooks/useAuthStatus"; 
-import { useRouter } from "next/navigation"; 
-import { useEffect } from "react"; 
+export default function NavigationPage() {
+  const router = useRouter(); // ルーターオブジェクトの取得
 
-export default function DashboardPage() {
-  const { isAuthenticated, isChecking } = useAuthStatus();
-  const router = useRouter(); 
-
-  // クライアントサイドでの認証チェックとリダイレクト
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => {
-    if (!isChecking && !isAuthenticated) {
-        router.push('/login'); 
-    }
-  }, [isChecking, isAuthenticated, router]);
-
-  if (isChecking || !isAuthenticated) {
-    return (
-        <div style={{ textAlign: 'center', paddingTop: '100px' }}>
-            {isChecking ? <h1>認証状態を確認中...</h1> : <h1>ログインページへ移動中...</h1>}
-        </div>
-    );
-  }
-
-  // ログイン済みの場合のダッシュボードコンテンツ
   return (
-    <div style={{ textAlign: 'center', paddingTop: '50px' }}>
-      <h1>ダッシュボードへようこそ！</h1>
-      <p>これがログイン後のメインコンテンツです。</p>
-      <AuthButtons /> 
+    <div style={{ padding: '20px', textAlign: 'center' }}>
+      <h1>ページ遷移テスト</h1>
+      
+      {/* Page 1への遷移 */}
+      <button 
+        onClick={() => router.push("/page1")}
+        style={{ margin: '10px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
+      >
+        Page 1へ移動
+      </button>
+
+      {/* Page 2への遷移 */}
+      <button 
+        onClick={() => router.push("/page2")}
+        style={{ margin: '10px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
+      >
+        Page 2へ移動
+      </button>
+
+      {/* Page 3への遷移 */}
+      <button 
+        onClick={() => router.push("/page3")}
+        style={{ margin: '10px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
+      >
+        Page 3へ移動
+      </button>
     </div>
   );
 }
