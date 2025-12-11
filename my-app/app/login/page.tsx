@@ -66,7 +66,13 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
-          アカウントをお持ちでないですか？ <Link href="/signup">新規登録はこちら</Link>
+          アカウントをお持ちでないですか？ 
+          <Link 
+          href="/signup"
+          className= "glow-link"
+          >
+            新規登録はこちら
+          </Link>
         </p>
       </div>
     </div>

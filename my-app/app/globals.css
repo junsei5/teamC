@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.glow-link {
+  color: #006eff;
+  font-weight: bold;
+  position: relative;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.glow-link:hover {
+  text-shadow: 0 0 8px rgba(0, 110, 255, 0.8),
+               0 0 12px rgba(0, 110, 255, 0.5);
+  color: #2f9fff;
+}
