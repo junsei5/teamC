@@ -2,10 +2,12 @@
 
 import Image from 'next/image'; 
 import React, { useState } from 'react'; 
+import { useRouter } from "next/navigation";
 
 const PROFILE_IMAGE_SRC = "/images/maru.png"; 
 
 export default function ProfilePage() {
+  const router = useRouter();
   
   const [nickname, setNickname] = useState(''); 
   const [regularRoute, setRegularRoute] = useState({
@@ -20,6 +22,11 @@ export default function ProfilePage() {
   const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => { setNickname(event.target.value); };
   const handleRouteChange = (field: 'startStation' | 'endStation', value: string) => {
     setRegularRoute(prev => ({ ...prev, [field]: value, }));
+  };
+
+  //矢印でdashboardに戻る
+  const handleGoBack = () => {
+    router.push("../dashboard");
   };
 
   const displayRoute = (
@@ -40,6 +47,10 @@ export default function ProfilePage() {
       <div style={{ padding: '0 20px 20px' }}>
         <div style={{ fontSize: '24px', cursor: 'pointer', width: '30px' }}>&larr;</div>
       </div>
+      <div
+        style={{ fontSize:"24px", cursor:"pointer", width:"30px" }}
+        onClick={handleGoBack}
+      ></div>
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         
